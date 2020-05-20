@@ -1,8 +1,28 @@
+//up选单 格式： id  文字说明 具体UP角色ID（0为全角色5 -1为全角色2.5
+var UPtype=[
+    [0,"普通白金奖池",-1],
+    [1,"白金蛋池获取三★概率翻倍",0], 
+    [2,"白银纯获取概率增加",11],
+    [3,"安芸真琴获取概率增加",10],
+    [4,"亚里莎获取概率增加",15]
+];
+
 var times= 0;
 //datavefity bs ms 3xchl rmb 2x 3x 
 var bs = ms = chl = rmb = x2 =x3 =0;
 jQuery(document).ready(function (param) { 
     console.log("模块：公主连结扭蛋模拟器已经成功载入");
+    //增加蛋池UP类型选项
+    $('#gachaset').append('<font color = "darkpink"><select id = "setUP" onchange="setUP(this.value)" class="combobox"></select></font>');
+    for(t=0;t<UPtype.length;t++){
+        var par = document.createElement("option");
+        par.value=UPtype[t][2];
+        par.text=UPtype[t][1];
+        $('#setUP').append(par);
+    }
+    if(!isPc()){
+        alert("当前为非PC端访问，页面排版可能不尽人意，望谅解");
+    }
 });
 function getRand(a){
     if(a==null) a=10000;
@@ -30,11 +50,7 @@ function setVar(Gbs,Gms,Gchl,Gcs,Grmb) {
  }
 
  $("#reset").click(function(){
-    times = 0;
-    bs = ms = chl = rmb = x2 =x3 =0;
-    setVar(bs,ms,chl,times,rmb);
-    $("#all3x").html("");
-    console.info("模块:公主连结扭蛋模拟器:已重置记录");
+     resetgacha();
  });
 
 //是否触发10连保底
@@ -63,11 +79,11 @@ var jing = false;
     setVar(bs,ms,chl,times,rmb);
     filltb();
  });
-var char1=[ 
+ var char1=[ 
     [0,'up精选名字','headpicsrc'],
     //[1,'佩可莉姆','https://patchwiki.biligame.com/images/pcr/6/67/rpznjh1epytf8mbp0t1dq91svg9dcti.png'],
-   // [2,'凯露','https://patchwiki.biligame.com/images/pcr/3/39/lgcqculc5zh699k6f391kiwnwcn94me.png'],
-   // [3,'可可萝','https://patchwiki.biligame.com/images/pcr/a/a4/mrwruc57npoamhw5y9ttd76s0l76xzd.png'],
+    //[2,'凯露','https://patchwiki.biligame.com/images/pcr/3/39/lgcqculc5zh699k6f391kiwnwcn94me.png'],
+    //[3,'可可萝','https://patchwiki.biligame.com/images/pcr/a/a4/mrwruc57npoamhw5y9ttd76s0l76xzd.png'],
     [4,'绫濑由加莉','https://patchwiki.biligame.com/images/pcr/c/cd/mpjpf8q3fczqdn5stzx5epe7a1whb1n.png'],
     [5,'莉玛','https://patchwiki.biligame.com/images/pcr/0/04/lo60ot9xodirhcikbgsp5ys5j1semxf.png'],
     [6,'玉泉美咲','https://patchwiki.biligame.com/images/pcr/6/69/1295ipvt0ha6zly43nr690rj7qsl4py.png'],
@@ -98,6 +114,7 @@ var char2=[
     [13,'宫坂珠希','https://patchwiki.biligame.com/images/pcr/3/39/dvomjvmcbbyliifd5hvb97mmqwtocjf.png'],
     [14,'大神美冬','https://patchwiki.biligame.com/images/pcr/c/ce/fbvjbat2po9fy580a3jyj0z2q4tmf2l.png'],
     [15,'宵浜深月','https://patchwiki.biligame.com/images/pcr/e/ed/mez3hg9iq9s5h6gor8ih6om9n9ln2za.png'],
+    [16,'森近铃','https://patchwiki.biligame.com/images/pcr/0/02/al8yiod9vehdtaov9pgs41uovntnkr2.png'],
 
 ];
 var char3=[ 
@@ -115,21 +132,22 @@ var char3=[
     [11,'白银纯','https://patchwiki.biligame.com/images/pcr/9/98/4qostpj00cvuozwjjl2po690k9iu994.png'],
     [12,'星野静流','https://patchwiki.biligame.com/images/pcr/0/00/0koylmjvym7s63y8xmz9skaa1xfuo0t.png'],
     [13,'莫妮卡·拜斯温特','https://patchwiki.biligame.com/images/pcr/0/03/smxy5tsyd5t92fqk5onwy56hlvbobb1.png'],
-    [13,'姬塔','https://patchwiki.biligame.com/images/pcr/7/7f/j62dyqwinraqa1jhcey51t2xgpl3kkq.png'],
+    [14,'姬塔','https://patchwiki.biligame.com/images/pcr/7/7f/j62dyqwinraqa1jhcey51t2xgpl3kkq.png'],
+    [15,'亚里莎','https://patchwiki.biligame.com/images/pcr/7/7c/9mlr4cmt1yol6qam0k5eetgqpoy9wao.png'],
 
 ];
-
+var chance = [250,8200];
 //扭蛋
 var result = [[0,0]];
  function gacha(a){
     var rand = getRand(); 
     if(a==null||a){
-        if(rand<=250){//pick 3x
+        if(rand<=chance[0]){//pick 3x
             ms+=50;
             x3++;
             result.push([3,pickchar(3,rand)]);
             jing = true;
-        }else if(rand>250&&rand<=8200){//pick 1x
+        }else if(rand>chance[0]&&rand<=chance[1]){//pick 1x
             ms+=1;
             result.push([1,pickchar(1,rand)]);
         }else{//pick 2x
@@ -140,7 +158,7 @@ var result = [[0,0]];
         }
     }else{
         console.log("扭蛋模拟器：触发十连保底");
-        if(rand<=250){//pick 3x
+        if(rand<=chance[0]){//pick 3x
             ms+=50;
             x3++;
             result.push([3,pickchar(3,rand)]);
@@ -157,18 +175,26 @@ var result = [[0,0]];
      switch(a){
          case 1:{
             rand= getRand(char1.length-1);
-            console.log("扭蛋模拟器：抽取到"+char1[rand][1]+"(1星),父随机数："+b);
+            //console.log("扭蛋模拟器：抽取到"+char1[rand][1]+"(1星),父随机数："+b);
             return rand;
          }
          case 2:{
             rand= getRand(char2.length-1);
-            console.log("扭蛋模拟器：抽取到"+char2[rand][1]+"(2星),父随机数："+b);
+            //console.log("扭蛋模拟器：抽取到"+char2[rand][1]+"(2星),父随机数："+b);
             return rand;
          }
          case 3:{
-            rand= getRand(char3.length-1);
-            console.log("扭蛋模拟器：抽取到"+char3[rand][1]+"(3星),父随机数："+b);
+            if((getRand(1000)<=280)&&upchara!=0){
+                console.log("扭蛋模拟器：获取到UP角色-"+char3[upchara][1]);
+                return upchara;
+            }
+            else{
+            do{
+            rand=getRand(char3.length-1);
+            }while(rand==upchara);
+            //console.log("扭蛋模拟器：抽取到"+char3[rand][1]+"(3星),父随机数："+b);
             return rand;
+            }
          }
          default:{
              console.log("模块：公主连结扭蛋模拟器:获取指定角色出错");
@@ -216,3 +242,42 @@ function filltb(){
 function cleartb(){
 $("#gacharesult").html("");
 }
+
+
+var bak = char3;
+var upchara = 0;
+//增加基础概率
+function setUP(a){
+    resetgacha();
+    upchara = 0;
+    if(a==null){
+        alert("出现问题项，请联系wiki管理员");
+        return;
+    }
+    //恢复默认概率
+    chance  = [250,8200];
+    //console.log("概率恢复至2.5");
+    if (a==0){
+    //全员概率500
+    chance  = [500,7950];
+    //console.log("概率恢复至5");
+    }
+    char3=bak;
+    //提取出UP卡
+    for(t=1;t<char3.length;t++){
+        if(a==char3[t][0]){
+            upchara=t;
+            break;
+        }
+    }
+    console.log("当前UP角色："+((upchara==0)?"全UP":char3[upchara][1])+" 概率："+((a==0)?"5%":"2.5%"));
+}
+//重置功能
+function resetgacha(){
+    times = 0;
+    bs = ms = chl = rmb = x2 =x3 =0;
+    setVar(bs,ms,chl,times,rmb);
+    $("#all3x").html("");
+    cleartb();
+    //console.info("模块:公主连结扭蛋模拟器:已重置记录");
+ }
